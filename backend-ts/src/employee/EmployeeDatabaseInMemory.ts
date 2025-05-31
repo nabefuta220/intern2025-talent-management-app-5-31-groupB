@@ -19,7 +19,16 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
         const employees = Array.from(this.employees.values());
         if (filterText === "") {
             return employees;
+        } else{
+            const lowerFilterText = filterText.toLowerCase();
+        return employees.filter(employee => {
+            const lowerName = employee.name.toLowerCase();
+                if (lowerName === lowerFilterText) {
+                    return true;
+                }
+                const nameParts = lowerName.split(" ");
+                return nameParts.some(part => part.includes(lowerFilterText));
+            });
         }
-        return employees.filter(employee => employee.name === filterText);
     }
 }
