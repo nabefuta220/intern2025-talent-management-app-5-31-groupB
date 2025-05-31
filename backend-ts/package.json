@@ -24,6 +24,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "io-ts": "^2.2.22"
+    "io-ts": "^2.2.22",
+    "use-file-upload": "^1.0.11"
   }
 }
