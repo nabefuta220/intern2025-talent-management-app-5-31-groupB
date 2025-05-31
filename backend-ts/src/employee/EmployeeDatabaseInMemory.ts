@@ -21,8 +21,12 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
             return employees;
         } else{
             const lowerFilterText = filterText.toLowerCase();
-            return employees.filter(employee => {
-                const nameParts = employee.name.toLowerCase().split(" ");
+        return employees.filter(employee => {
+            const lowerName = employee.name.toLowerCase();
+                if (lowerName === lowerFilterText) {
+                    return true;
+                }
+                const nameParts = lowerName.split(" ");
                 return nameParts.some(part => part.includes(lowerFilterText));
             });
         }
