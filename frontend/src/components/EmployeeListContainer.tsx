@@ -8,7 +8,9 @@ import { Employee, EmployeeT } from "../models/Employee";
 
 export type EmployeesContainerProps = {
   filterText: string;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: "asc" | "desc";
+  filterAffiliation: string;
+  filterPosition: string;
 };
 
 const EmployeesT = t.array(EmployeeT);
@@ -26,10 +28,17 @@ const employeesFetcher = async (url: string): Promise<Employee[]> => {
   return decoded.right;
 };
 
-export function EmployeeListContainer({ filterText, sortOrder }: EmployeesContainerProps) {
+export function EmployeeListContainer({
+  filterText,
+  sortOrder,
+  filterAffiliation,
+  filterPosition,
+}: EmployeesContainerProps) {
   const encodedFilterText = encodeURIComponent(filterText);
+  const encodedFilterAffiliation = encodeURIComponent(filterAffiliation);
+  const encodedFilterPosition = encodeURIComponent(filterPosition);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
-    `/api/employees?filterText=${encodedFilterText}`,
+    `/api/employees?filterText=${encodedFilterText}&filterAffiliation=${encodedFilterAffiliation}&filterPosition=${encodedFilterPosition}`,
     employeesFetcher
   );
   useEffect(() => {
@@ -40,13 +49,13 @@ export function EmployeeListContainer({ filterText, sortOrder }: EmployeesContai
 
   if (data != null) {
     const sortedData = [...data].sort((a, b) => {
-      if (sortOrder === 'asc') {
+      if (sortOrder === "asc") {
         return a.name.localeCompare(b.name);
       } else {
         return b.name.localeCompare(a.name);
       }
     });
-  
+
     return (
       <>
         {sortedData.map((employee) => (
