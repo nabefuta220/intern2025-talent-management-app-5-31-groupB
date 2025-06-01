@@ -5,7 +5,8 @@ import { EmployeeDatabaseDynamoDB } from './employee/EmployeeDatabaseDynamoDB';
 import { EmployeeDatabase } from './employee/EmployeeDatabase';
 
 const getEmployeeHandler = async (database: EmployeeDatabase, id: string): Promise<LambdaFunctionURLResult> => {
-    const employee: Employee | undefined = await database.getEmployee(id);
+    const effectiveId = id.endsWith("/") ? id.slice(0, -1) : id; // Remove trailing slash if present
+    const employee: Employee | undefined = await database.getEmployee(effectiveId);
     if (employee == null) {
         console.log("A user is not found.");
         return { statusCode: 404 };
@@ -41,6 +42,13 @@ export const handle = async (event: LambdaFunctionURLEvent): Promise<LambdaFunct
         } else if (path.startsWith("/api/employees/")) {
             const id = path.substring("/api/employees/".length);
             return getEmployeeHandler(database, id);
+        } else if (event.requestContext.http.method === "POST" && path === "/api/upload/") {
+            const body = JSON.parse(event.body ?? "[]");
+            await database.addEmployees(body);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ message: "Uploaded successfully" }),
+            };
         } else {
             console.log("Invalid path", path);
             return { statusCode: 400 };

@@ -1,5 +1,6 @@
 import { EmployeeDatabase } from "./EmployeeDatabase";
 import { Employee } from "./Employee";
+import { NONAME } from "dns";
 
 export class EmployeeDatabaseInMemory implements EmployeeDatabase {
     private employees: Map<string, Employee>
@@ -31,4 +32,7 @@ export class EmployeeDatabaseInMemory implements EmployeeDatabase {
             });
         }
     }
+       async addEmployees(employees: Employee[]): Promise<void> {
+           return;;
+          }
 }

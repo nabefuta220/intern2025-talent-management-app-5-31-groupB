@@ -2,6 +2,8 @@ import { DynamoDBClient, GetItemCommand, GetItemCommandInput, ScanCommand, ScanC
 import { isLeft } from "fp-ts/Either";
 import { EmployeeDatabase } from "./EmployeeDatabase";
 import { Employee, EmployeeT } from "./Employee";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 export class EmployeeDatabaseDynamoDB implements EmployeeDatabase {
     private client: DynamoDBClient;
@@ -64,6 +66,18 @@ export class EmployeeDatabaseDynamoDB implements EmployeeDatabase {
                 }
             });
     }
+    async addEmployees(employees: Employee[]): Promise<void> {
+        console.log(`Adding ${employees.length} employees to DynamoDB table ${this.tableName}`);
+        const docClient = DynamoDBDocumentClient.from(this.client);
+        for (const emp of employees) {
+            console.log(`Adding employee: ${JSON.stringify(emp)}`);
+            const cmd = new PutCommand({
+                TableName: this.tableName,
+                Item: emp,
+            });
+            await docClient.send(cmd);
+        }
+      }
 }
 
 function mapNullable<T, U>(value: T | null | undefined, mapper: (value: T) => U): U | undefined {
