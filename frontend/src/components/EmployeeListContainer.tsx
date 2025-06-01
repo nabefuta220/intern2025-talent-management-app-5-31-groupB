@@ -8,6 +8,7 @@ import { Employee, EmployeeT } from "../models/Employee";
 
 export type EmployeesContainerProps = {
   filterText: string;
+  sortOrder: 'asc' | 'desc';
 };
 
 const EmployeesT = t.array(EmployeeT);
@@ -25,7 +26,7 @@ const employeesFetcher = async (url: string): Promise<Employee[]> => {
   return decoded.right;
 };
 
-export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
+export function EmployeeListContainer({ filterText, sortOrder }: EmployeesContainerProps) {
   const encodedFilterText = encodeURIComponent(filterText);
   const { data, error, isLoading } = useSWR<Employee[], Error>(
     `/api/employees?filterText=${encodedFilterText}`,
@@ -36,10 +37,23 @@ export function EmployeeListContainer({ filterText }: EmployeesContainerProps) {
       console.error(`Failed to fetch employees filtered by filterText`, error);
     }
   }, [error, filterText]);
+
   if (data != null) {
-    return data.map((employee) => (
-      <EmployeeListItem employee={employee} key={employee.id} />
-    ));
+    const sortedData = [...data].sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.name.localeCompare(b.name);
+      } else {
+        return b.name.localeCompare(a.name);
+      }
+    });
+  
+    return (
+      <>
+        {sortedData.map((employee) => (
+          <EmployeeListItem key={employee.id} employee={employee} />
+        ))}
+      </>
+    );
   }
   if (isLoading) {
     return <p>Loading employees...</p>;
