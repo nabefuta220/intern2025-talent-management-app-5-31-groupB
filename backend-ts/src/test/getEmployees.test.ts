@@ -37,3 +37,27 @@ test("getEmployeesのテスト(氏名完全一致-存在しない氏名)", async
     const employees = await db.getEmployees("未定義　太郎");
     expect(employees.length).toBe(0);
 });
+
+test("getEmployeesのテスト(氏名部分一致-1)", async () => {
+    const { EmployeeDatabaseInMemory } = await import("../employee/EmployeeDatabaseInMemory");
+    const db = new EmployeeDatabaseInMemory();
+    const employees = await db.getEmployees("Jane");
+    expect(employees.length).toBe(1);
+    expect(employees[0]).toEqual({ id: "1", name: "Jane Doe", age: 22 });
+});
+
+test("getEmployeesのテスト(氏名部分一致-2)", async () => {
+    const { EmployeeDatabaseInMemory } = await import("../employee/EmployeeDatabaseInMemory");
+    const db = new EmployeeDatabaseInMemory();
+    const employees = await db.getEmployees("John");
+    expect(employees.length).toBe(1);
+    expect(employees[0]).toEqual({ id: "2", name: "John Smith", age: 28 });
+});
+
+test("getEmployeesのテスト(氏名部分一致-3)", async () => {
+    const { EmployeeDatabaseInMemory } = await import("../employee/EmployeeDatabaseInMemory");
+    const db = new EmployeeDatabaseInMemory();
+    const employees = await db.getEmployees("山田");
+    expect(employees.length).toBe(1);
+    expect(employees[0]).toEqual({ id: "3", name: "山田 太郎", age: 27 });
+});
